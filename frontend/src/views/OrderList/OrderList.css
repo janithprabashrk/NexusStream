@@ -1,0 +1,62 @@
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.filters-card {
+  background-color: var(--color-card-bg);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
+}
+
+.order-id {
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 0.875rem;
+}
+
+.error-card {
+  background-color: rgba(220, 53, 69, 0.05);
+  border-color: var(--color-danger);
+}
+
+.error-message {
+  margin: 0 0 1rem;
+  color: var(--color-danger);
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.results-info {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
