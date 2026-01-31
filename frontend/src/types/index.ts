@@ -67,24 +67,35 @@ export interface OrderStatistics {
   ordersByDate: Record<string, number>;
 }
 
-export interface FeedResponse {
-  success: boolean;
-  order?: OrderEvent;
-  errors?: string[];
+// Successful feed response from backend
+export interface FeedSuccessResponse {
+  status: 'accepted';
+  orderId: string;
+  partnerId: string;
+  sequenceNumber: number;
+}
+
+// Error feed response from backend
+export interface FeedErrorResponse {
+  status: 'rejected';
+  orderId: string;
+  partnerId: string;
+  errors: string[];
+}
+
+// Combined type for feed API responses
+export type FeedResponse = FeedSuccessResponse | FeedErrorResponse;
+
+// Helper type guard
+export function isFeedSuccess(response: FeedResponse): response is FeedSuccessResponse {
+  return response.status === 'accepted';
 }
 
 export interface BatchFeedResponse {
-  success: boolean;
-  results: Array<{
-    success: boolean;
-    order?: OrderEvent;
-    errors?: string[];
-  }>;
-  summary: {
-    total: number;
-    successful: number;
-    failed: number;
-  };
+  total: number;
+  accepted: number;
+  rejected: number;
+  results: FeedResponse[];
 }
 
 // Query Parameters

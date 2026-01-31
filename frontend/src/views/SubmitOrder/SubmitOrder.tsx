@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Input, Select, Badge } from '@/components';
 import { feedApi } from '@/api';
-import { PartnerAInput, PartnerBInput, FeedResponse } from '@/types';
+import { PartnerAInput, PartnerBInput, FeedResponse, isFeedSuccess, FeedSuccessResponse } from '@/types';
 
 type PartnerType = 'PARTNER_A' | 'PARTNER_B';
 
@@ -21,7 +21,7 @@ export const SubmitOrder: React.FC = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState<FormState>(initialState);
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<FeedResponse | null>(null);
+  const [response, setResponse] = useState<FeedSuccessResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const updateField = (field: keyof FormState, value: string) => { setForm((prev) => ({ ...prev, [field]: value })); setResponse(null); setError(null); };
@@ -47,7 +47,11 @@ export const SubmitOrder: React.FC = () => {
         const payload: PartnerBInput = { transactionId: form.transactionId, itemCode: form.itemCode, clientId: form.clientId, qty: parseInt(form.qty, 10), price: parseFloat(form.price), tax: parseFloat(form.tax), purchaseTime: form.purchaseTime };
         result = await feedApi.submitPartnerB(payload);
       }
-      setResponse(result);
+      if (isFeedSuccess(result)) {
+        setResponse(result);
+      } else {
+        setError(result.errors?.join(', ') || 'Validation failed');
+      }
     } catch (err) { setError(err instanceof Error ? err.message : 'Submission failed'); } finally { setLoading(false); }
   };
 
