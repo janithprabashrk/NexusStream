@@ -1,9 +1,10 @@
 import express, { Express } from 'express';
-import { createFeedRouter, errorHandler, notFoundHandler } from './infrastructure/http';
+import { createFeedRouter, createOrdersRouter, errorHandler, notFoundHandler } from './infrastructure/http';
 import { FeedHandler } from './application/services/feed-handler';
+import { OrderQueryService } from './application/services/order-query-service';
 import { ValidationService } from './domain/services/validation-service';
 import { OrderTransformer } from './domain/services/order-transformer';
-import { InMemoryOrderStream, InMemorySequenceManager } from './infrastructure/adapters';
+import { InMemoryOrderStream, InMemorySequenceManager, InMemoryOrderRepository } from './infrastructure/adapters';
 
 /**
  * Application container for dependency injection.
@@ -11,9 +12,11 @@ import { InMemoryOrderStream, InMemorySequenceManager } from './infrastructure/a
 export interface AppContainer {
   orderStream: InMemoryOrderStream;
   sequenceManager: InMemorySequenceManager;
+  orderRepository: InMemoryOrderRepository;
   validationService: ValidationService;
   transformer: OrderTransformer;
   feedHandler: FeedHandler;
+  orderQueryService: OrderQueryService;
 }
 
 /**
@@ -23,6 +26,7 @@ export function createContainer(): AppContainer {
   // Infrastructure layer
   const orderStream = new InMemoryOrderStream();
   const sequenceManager = new InMemorySequenceManager();
+  const orderRepository = new InMemoryOrderRepository();
 
   // Domain services
   const validationService = new ValidationService();
@@ -35,13 +39,22 @@ export function createContainer(): AppContainer {
     orderStream,
     sequenceManager
   );
+  
+  const orderQueryService = new OrderQueryService(orderRepository);
+
+  // Subscribe to valid orders stream to persist orders
+  orderStream.onValidOrder(async (payload) => {
+    await orderRepository.save(payload.orderEvent);
+  });
 
   return {
     orderStream,
     sequenceManager,
+    orderRepository,
     validationService,
     transformer,
     feedHandler,
+    orderQueryService,
   };
 }
 
@@ -62,6 +75,7 @@ export function createApp(container?: AppContainer): Express {
 
   // API routes
   app.use('/api/feed', createFeedRouter(appContainer.feedHandler));
+  app.use('/api/orders', createOrdersRouter(appContainer.orderQueryService));
 
   // Error handling
   app.use(notFoundHandler);
@@ -91,6 +105,8 @@ export function startServer(port: number = 3000): void {
     console.log(`📊 Health check: http://localhost:${port}/health`);
     console.log(`📥 Partner A endpoint: POST http://localhost:${port}/api/feed/partner-a`);
     console.log(`📥 Partner B endpoint: POST http://localhost:${port}/api/feed/partner-b`);
+    console.log(`📋 Orders endpoint: GET http://localhost:${port}/api/orders`);
+    console.log(`📈 Stats endpoint: GET http://localhost:${port}/api/orders/stats`);
   });
 }
 
