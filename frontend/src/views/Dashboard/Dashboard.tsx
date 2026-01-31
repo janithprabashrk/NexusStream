@@ -45,8 +45,8 @@ export const Dashboard: React.FC = () => {
     return null;
   }
 
-  const partnerAOrders = stats.ordersByPartner['PARTNER_A'] || 0;
-  const partnerBOrders = stats.ordersByPartner['PARTNER_B'] || 0;
+  const partnerAOrders = stats.ordersByPartner?.['PARTNER_A'] || 0;
+  const partnerBOrders = stats.ordersByPartner?.['PARTNER_B'] || 0;
 
   return (
     <div className="dashboard">
@@ -58,28 +58,28 @@ export const Dashboard: React.FC = () => {
         <Card className="stat-card">
           <div className="stat-content">
             <span className="stat-label">Total Orders</span>
-            <span className="stat-value">{stats.totalOrders.toLocaleString()}</span>
+            <span className="stat-value">{(stats.totalOrders ?? 0).toLocaleString()}</span>
           </div>
         </Card>
 
         <Card className="stat-card">
           <div className="stat-content">
             <span className="stat-label">Gross Amount</span>
-            <span className="stat-value">{formatCurrency(stats.totalGrossAmount)}</span>
+            <span className="stat-value">{formatCurrency(stats.totalGrossAmount ?? 0)}</span>
           </div>
         </Card>
 
         <Card className="stat-card">
           <div className="stat-content">
             <span className="stat-label">Tax Amount</span>
-            <span className="stat-value">{formatCurrency(stats.totalTaxAmount)}</span>
+            <span className="stat-value">{formatCurrency(stats.totalTaxAmount ?? 0)}</span>
           </div>
         </Card>
 
         <Card className="stat-card highlight">
           <div className="stat-content">
             <span className="stat-label">Net Amount</span>
-            <span className="stat-value">{formatCurrency(stats.totalNetAmount)}</span>
+            <span className="stat-value">{formatCurrency(stats.totalNetAmount ?? 0)}</span>
           </div>
         </Card>
       </div>
@@ -90,20 +90,20 @@ export const Dashboard: React.FC = () => {
             <div className="partner-item partner-a">
               <div className="partner-info">
                 <span className="partner-name">Partner A</span>
-                <span className="partner-count">{partnerAOrders.toLocaleString()} orders</span>
+                <span className="partner-count">{(partnerAOrders ?? 0).toLocaleString()} orders</span>
               </div>
               <div className="partner-bar-container">
                 <div
                   className="partner-bar"
                   style={{
-                    width: stats.totalOrders > 0
+                    width: (stats.totalOrders ?? 0) > 0
                       ? `${(partnerAOrders / stats.totalOrders) * 100}%`
                       : '0%',
                   }}
                 />
               </div>
               <span className="partner-percentage">
-                {stats.totalOrders > 0
+                {(stats.totalOrders ?? 0) > 0
                   ? ((partnerAOrders / stats.totalOrders) * 100).toFixed(1)
                   : 0}%
               </span>
@@ -112,20 +112,20 @@ export const Dashboard: React.FC = () => {
             <div className="partner-item partner-b">
               <div className="partner-info">
                 <span className="partner-name">Partner B</span>
-                <span className="partner-count">{partnerBOrders.toLocaleString()} orders</span>
+                <span className="partner-count">{(partnerBOrders ?? 0).toLocaleString()} orders</span>
               </div>
               <div className="partner-bar-container">
                 <div
                   className="partner-bar"
                   style={{
-                    width: stats.totalOrders > 0
+                    width: (stats.totalOrders ?? 0) > 0
                       ? `${(partnerBOrders / stats.totalOrders) * 100}%`
                       : '0%',
                   }}
                 />
               </div>
               <span className="partner-percentage">
-                {stats.totalOrders > 0
+                {(stats.totalOrders ?? 0) > 0
                   ? ((partnerBOrders / stats.totalOrders) * 100).toFixed(1)
                   : 0}%
               </span>
@@ -135,13 +135,13 @@ export const Dashboard: React.FC = () => {
 
         <Card title="Average Order Value" className="avg-card">
           <div className="avg-value">
-            <span className="avg-amount">{formatCurrency(stats.averageOrderValue)}</span>
+            <span className="avg-amount">{formatCurrency(stats.averageOrderValue || 0)}</span>
             <span className="avg-label">per order</span>
           </div>
         </Card>
       </div>
 
-      {Object.keys(stats.ordersByDate).length > 0 && (
+      {stats.ordersByDate && Object.keys(stats.ordersByDate).length > 0 && (
         <Card title="Orders by Date">
           <div className="date-stats">
             {Object.entries(stats.ordersByDate)
