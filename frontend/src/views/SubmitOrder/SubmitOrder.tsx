@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Input, Select, Badge } from '@/components';
 import { feedApi } from '@/api';
-import { PartnerAInput, PartnerBInput, FeedResponse, PartnerId } from '@/types';
+import { PartnerAInput, PartnerBInput, FeedResponse } from '@/types';
 import './SubmitOrder.css';
 
 type PartnerType = 'PARTNER_A' | 'PARTNER_B';

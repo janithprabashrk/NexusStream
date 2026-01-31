@@ -66,7 +66,7 @@ function buildQueryString(params: Record<string, unknown>): string {
 // Orders API
 export const ordersApi = {
   async getOrders(params: QueryParams = {}): Promise<PaginatedResult<OrderEvent>> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString(params as unknown as Record<string, unknown>);
     return request<PaginatedResult<OrderEvent>>(`/orders${queryString}`);
   },
 
@@ -82,7 +82,7 @@ export const ordersApi = {
     partnerId: PartnerId,
     params: Omit<QueryParams, 'partnerId'> = {}
   ): Promise<PaginatedResult<OrderEvent>> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString(params as unknown as Record<string, unknown>);
     return request<PaginatedResult<OrderEvent>>(`/orders/by-partner/${partnerId}${queryString}`);
   },
 
@@ -90,7 +90,7 @@ export const ordersApi = {
     customerId: string,
     params: Omit<QueryParams, 'customerId'> = {}
   ): Promise<PaginatedResult<OrderEvent>> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString(params as unknown as Record<string, unknown>);
     return request<PaginatedResult<OrderEvent>>(`/orders/by-customer/${encodeURIComponent(customerId)}${queryString}`);
   },
 
