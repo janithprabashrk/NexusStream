@@ -102,17 +102,37 @@ export const ordersApi = {
 // Feed API
 export const feedApi = {
   async submitPartnerA(order: PartnerAInput): Promise<FeedResponse> {
-    return request<FeedResponse>('/feed/partner-a', {
+    const url = `${API_BASE}/feed/partner-a`;
+    const response = await fetch(url, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(order),
     });
+    
+    // Both 202 (accepted) and 422 (rejected) are valid responses
+    if (response.status === 202 || response.status === 422) {
+      return response.json();
+    }
+    
+    const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    throw new ApiError(response.status, error.message || `HTTP ${response.status}`);
   },
 
   async submitPartnerB(order: PartnerBInput): Promise<FeedResponse> {
-    return request<FeedResponse>('/feed/partner-b', {
+    const url = `${API_BASE}/feed/partner-b`;
+    const response = await fetch(url, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(order),
     });
+    
+    // Both 202 (accepted) and 422 (rejected) are valid responses
+    if (response.status === 202 || response.status === 422) {
+      return response.json();
+    }
+    
+    const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    throw new ApiError(response.status, error.message || `HTTP ${response.status}`);
   },
 
   async submitPartnerABatch(orders: PartnerAInput[]): Promise<BatchFeedResponse> {

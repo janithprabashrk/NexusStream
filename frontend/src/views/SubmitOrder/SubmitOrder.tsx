@@ -26,6 +26,13 @@ export const SubmitOrder: React.FC = () => {
 
   const updateField = (field: keyof FormState, value: string) => { setForm((prev) => ({ ...prev, [field]: value })); setResponse(null); setError(null); };
 
+  const handlePartnerChange = (newPartner: string) => {
+    // Reset to initial state but with the NEW partner value
+    setForm({ ...initialState, partner: newPartner as PartnerType });
+    setResponse(null);
+    setError(null);
+  };
+
   const generateSampleData = () => {
     const now = new Date();
     if (form.partner === 'PARTNER_A') {
@@ -71,7 +78,7 @@ export const SubmitOrder: React.FC = () => {
           <div className="p-6 border-b border-gray-100 dark:border-dark-600 bg-gray-50/50 dark:bg-dark-700/50">
             <div className="flex flex-col sm:flex-row sm:items-end gap-4">
               <div className="flex-1">
-                <Select label="Select Partner" value={form.partner} onChange={(e) => { updateField('partner', e.target.value); handleReset(); }} options={[{ value: 'PARTNER_A', label: 'Partner A (orderId, skuId, taxRate decimal)' }, { value: 'PARTNER_B', label: 'Partner B (transactionId, itemCode, tax percentage)' }]} />
+                <Select label="Select Partner" value={form.partner} onChange={(e) => handlePartnerChange(e.target.value)} options={[{ value: 'PARTNER_A', label: 'Partner A (orderId, skuId, taxRate decimal)' }, { value: 'PARTNER_B', label: 'Partner B (transactionId, itemCode, tax percentage)' }]} />
               </div>
               <Button type="button" variant="secondary" onClick={generateSampleData}><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Generate Sample</Button>
             </div>
@@ -86,7 +93,7 @@ export const SubmitOrder: React.FC = () => {
                 <Input label="Quantity" type="number" value={form.quantity} onChange={(e) => updateField('quantity', e.target.value)} placeholder="e.g., 5" min="1" required />
                 <Input label="Unit Price" type="number" value={form.unitPrice} onChange={(e) => updateField('unitPrice', e.target.value)} placeholder="e.g., 29.99" step="0.01" min="0" required helpText="Price per unit in dollars" />
                 <Input label="Tax Rate" type="number" value={form.taxRate} onChange={(e) => updateField('taxRate', e.target.value)} placeholder="e.g., 0.08" step="0.01" min="0" max="1" required helpText="Decimal value (0.08 = 8%)" />
-                <Input label="Transaction Time (ms)" type="number" value={form.transactionTimeMs} onChange={(e) => updateField('transactionTimeMs', e.target.value)} placeholder="e.g., 1699876543210" required helpText="Unix timestamp in milliseconds" className="sm:col-span-2" />
+                <Input label="Transaction Time (ms)" type="number" value={form.transactionTimeMs} onChange={(e) => updateField('transactionTimeMs', e.target.value)} placeholder={`e.g., ${Date.now()}`} required helpText="Unix timestamp in ms (must be after year 2000). Use 'Generate Sample' for current time." className="sm:col-span-2" />
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

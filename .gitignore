@@ -17,3 +17,7 @@ build/
 # Environment secrets
 .env
 .env.local
+
+# Data persistence files
+data/
+backend/data/
