@@ -79,7 +79,7 @@ export function startServer(port: number = 3000): void {
 
   // Subscribe to stream events for logging
   container.orderStream.onValidOrder((payload) => {
-    console.log(`[VALID_ORDER] ${payload.orderEvent.partnerId}:${payload.orderEvent.orderId} seq=${payload.orderEvent.sequenceNumber}`);
+    console.log(`[VALID_ORDER] ${payload.orderEvent.partnerId}:${payload.orderEvent.externalOrderId} seq=${payload.orderEvent.sequenceNumber}`);
   });
 
   container.orderStream.onErrorOrder((payload) => {

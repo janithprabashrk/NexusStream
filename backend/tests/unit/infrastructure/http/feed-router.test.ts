@@ -102,7 +102,7 @@ describe('Feed Router', () => {
 
       const history = container.orderStream.getValidOrderHistory();
       expect(history.length).toBe(1);
-      expect(history[0].orderEvent.orderId).toBe('ORD-A-001');
+      expect(history[0].orderEvent.externalOrderId).toBe('ORD-A-001');
     });
   });
 

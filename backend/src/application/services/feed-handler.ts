@@ -1,5 +1,5 @@
 import { PartnerId } from '../../domain/models';
-import { PartnerAInput, PartnerBInput } from '../../domain/models';
+import { PartnerAInput, PartnerBInput, ValidationError } from '../../domain/models';
 import { ValidationService } from '../../domain/services/validation-service';
 import { OrderTransformer } from '../../domain/services/order-transformer';
 import { IOrderStreamPort, ISequenceManagerPort } from '../../domain/ports';
@@ -13,6 +13,13 @@ export interface FeedProcessingResult {
   partnerId: PartnerId;
   sequenceNumber?: number;
   errors?: string[];
+}
+
+/**
+ * Convert ValidationError array to string array for external consumption.
+ */
+function formatValidationErrors(errors: ValidationError[]): string[] {
+  return errors.map((e) => `${e.field}: ${e.message}`);
 }
 
 /**
@@ -45,11 +52,13 @@ export class FeedHandler {
     const validationResult = this.validationService.validatePartnerA(input);
 
     if (!validationResult.isValid) {
+      const errorMessages = formatValidationErrors(validationResult.errors);
+      
       // Route to error stream
       this.orderStream.emitErrorOrder({
         partnerId,
         originalOrderId: orderId,
-        errors: validationResult.errors,
+        errors: errorMessages,
         rawInput: input,
         timestamp: new Date(),
       });
@@ -58,7 +67,7 @@ export class FeedHandler {
         success: false,
         orderId,
         partnerId,
-        errors: validationResult.errors,
+        errors: errorMessages,
       };
     }
 
@@ -66,7 +75,8 @@ export class FeedHandler {
     const sequenceNumber = this.sequenceManager.getNextSequence(partnerId);
 
     // Step 3: Transform to OrderEvent
-    const orderEvent = this.transformer.transformPartnerA(input, sequenceNumber);
+    const createInput = this.transformer.transformPartnerA(input);
+    const orderEvent = this.transformer.buildOrderEvent(createInput, sequenceNumber);
 
     // Step 4: Route to valid orders stream
     this.orderStream.emitValidOrder({
@@ -93,11 +103,13 @@ export class FeedHandler {
     const validationResult = this.validationService.validatePartnerB(input);
 
     if (!validationResult.isValid) {
+      const errorMessages = formatValidationErrors(validationResult.errors);
+      
       // Route to error stream
       this.orderStream.emitErrorOrder({
         partnerId,
         originalOrderId: orderId,
-        errors: validationResult.errors,
+        errors: errorMessages,
         rawInput: input,
         timestamp: new Date(),
       });
@@ -106,7 +118,7 @@ export class FeedHandler {
         success: false,
         orderId,
         partnerId,
-        errors: validationResult.errors,
+        errors: errorMessages,
       };
     }
 
@@ -114,7 +126,8 @@ export class FeedHandler {
     const sequenceNumber = this.sequenceManager.getNextSequence(partnerId);
 
     // Step 3: Transform to OrderEvent
-    const orderEvent = this.transformer.transformPartnerB(input, sequenceNumber);
+    const createInput = this.transformer.transformPartnerB(input);
+    const orderEvent = this.transformer.buildOrderEvent(createInput, sequenceNumber);
 
     // Step 4: Route to valid orders stream
     this.orderStream.emitValidOrder({
