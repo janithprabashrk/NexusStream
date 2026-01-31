@@ -4,7 +4,8 @@ export {
   ValidOrderPayload,
   ErrorOrderPayload,
   ValidOrderListener,
-  ErrorOrderListener
+  ErrorOrderListener,
+  PartnerId
 } from './order-stream.port';
 
 export { ISequenceManagerPort } from './sequence-manager.port';
