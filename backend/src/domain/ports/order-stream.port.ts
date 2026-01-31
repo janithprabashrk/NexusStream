@@ -1,5 +1,7 @@
-import { EventEmitter } from 'events';
-import { OrderEvent, ErrorEvent } from '../../domain/models';
+import { OrderEvent, PartnerId } from '../models';
+
+// Re-export PartnerId for convenience
+export { PartnerId } from '../models';
 
 /**
  * Event types for the order processing streams
@@ -13,13 +15,16 @@ export enum StreamEvent {
  * Stream event payload types
  */
 export interface ValidOrderPayload {
-  order: OrderEvent;
-  receivedAt: string;
+  orderEvent: OrderEvent;
+  receivedAt: Date;
 }
 
 export interface ErrorOrderPayload {
-  error: ErrorEvent;
-  receivedAt: string;
+  partnerId: PartnerId;
+  originalOrderId: string;
+  errors: string[];
+  rawInput: unknown;
+  timestamp: Date;
 }
 
 /**
@@ -34,10 +39,10 @@ export type ErrorOrderListener = (payload: ErrorOrderPayload) => void | Promise<
  */
 export interface IOrderStreamPort {
   /** Emit a valid order to the stream */
-  emitValidOrder(order: OrderEvent): void;
+  emitValidOrder(payload: ValidOrderPayload): void;
   
   /** Emit an error order to the stream */
-  emitErrorOrder(error: ErrorEvent): void;
+  emitErrorOrder(payload: ErrorOrderPayload): void;
   
   /** Subscribe to valid orders */
   onValidOrder(listener: ValidOrderListener): void;
@@ -50,13 +55,4 @@ export interface IOrderStreamPort {
   
   /** Unsubscribe from error orders */
   offErrorOrder(listener: ErrorOrderListener): void;
-  
-  /** Get count of valid orders emitted */
-  getValidOrderCount(): number;
-  
-  /** Get count of error orders emitted */
-  getErrorOrderCount(): number;
-  
-  /** Reset counters (for testing) */
-  resetCounters(): void;
 }
