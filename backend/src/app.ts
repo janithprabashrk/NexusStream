@@ -4,15 +4,16 @@ import { FeedHandler } from './application/services/feed-handler';
 import { OrderQueryService } from './application/services/order-query-service';
 import { ValidationService } from './domain/services/validation-service';
 import { OrderTransformer } from './domain/services/order-transformer';
-import { InMemoryOrderStream, InMemorySequenceManager, InMemoryOrderRepository } from './infrastructure/adapters';
+import { InMemoryOrderStream, InMemorySequenceManager, InMemoryOrderRepository, FileOrderRepository, FileSequenceManager } from './infrastructure/adapters';
+import { IOrderRepositoryPort, ISequenceManagerPort } from './domain/ports';
 
 /**
  * Application container for dependency injection.
  */
 export interface AppContainer {
   orderStream: InMemoryOrderStream;
-  sequenceManager: InMemorySequenceManager;
-  orderRepository: InMemoryOrderRepository;
+  sequenceManager: ISequenceManagerPort;
+  orderRepository: IOrderRepositoryPort;
   validationService: ValidationService;
   transformer: OrderTransformer;
   feedHandler: FeedHandler;
@@ -20,13 +21,37 @@ export interface AppContainer {
 }
 
 /**
+ * Container options for configuring persistence.
+ */
+export interface ContainerOptions {
+  /** Use file-based persistence (default: true in production) */
+  usePersistence?: boolean;
+  /** Data directory for file persistence (default: './data') */
+  dataDir?: string;
+}
+
+/**
  * Create and configure the application container.
  */
-export function createContainer(): AppContainer {
-  // Infrastructure layer
+export function createContainer(options: ContainerOptions = {}): AppContainer {
+  const usePersistence = options.usePersistence ?? (process.env.NODE_ENV !== 'test');
+  const dataDir = options.dataDir ?? './data';
+
+  // Infrastructure layer - use file-based or in-memory based on options
   const orderStream = new InMemoryOrderStream();
-  const sequenceManager = new InMemorySequenceManager();
-  const orderRepository = new InMemoryOrderRepository();
+  
+  let sequenceManager: ISequenceManagerPort;
+  let orderRepository: IOrderRepositoryPort;
+
+  if (usePersistence) {
+    console.log('💾 Using file-based persistence');
+    sequenceManager = new FileSequenceManager(dataDir);
+    orderRepository = new FileOrderRepository(dataDir);
+  } else {
+    console.log('🧠 Using in-memory storage (no persistence)');
+    sequenceManager = new InMemorySequenceManager();
+    orderRepository = new InMemoryOrderRepository();
+  }
 
   // Domain services
   const validationService = new ValidationService();

@@ -226,9 +226,9 @@ describe('Orders Router', () => {
     it('should return order by ID', async () => {
       await request(app).post('/api/feed/partner-a').send(validPartnerAInput);
 
-      // Get the order ID from the repository
-      const orders = container.orderRepository.getAll();
-      const orderId = orders[0].id;
+      // Get the order ID from the repository using findMany
+      const result = await container.orderRepository.findMany();
+      const orderId = result.data[0].id;
 
       const response = await request(app)
         .get(`/api/orders/${orderId}`)

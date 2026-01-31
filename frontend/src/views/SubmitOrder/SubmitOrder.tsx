@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Input, Select, Badge } from '@/components';
+import { Card, Button, Input, Select, Badge, SuccessIllustration } from '@/components';
 import { feedApi } from '@/api';
 import { PartnerAInput, PartnerBInput, FeedResponse, isFeedSuccess, FeedSuccessResponse } from '@/types';
 
@@ -108,25 +108,23 @@ export const SubmitOrder: React.FC = () => {
         </form>
       </Card>
 
-      {response && response.order && (
+      {response && (
         <Card className="overflow-hidden border-2 border-neon-green/30 dark:border-neon-green/50">
           <div className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-neon-green/10 dark:bg-neon-green/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-neon-green" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
+            <div className="flex items-start gap-6">
+              <SuccessIllustration className="w-24 h-24 flex-shrink-0 hidden sm:block" />
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Order Submitted Successfully</h3>
-                  <Badge variant="success" pulse>Processed</Badge>
+                  <Badge variant="success" pulse>Accepted</Badge>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-gray-50 dark:bg-dark-700">
-                  <div><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Event ID</p><p className="font-mono text-sm text-gray-900 dark:text-white">{response.order.id}</p></div>
-                  <div><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Sequence Number</p><p className="font-mono text-sm text-gray-900 dark:text-white">#{response.order.sequenceNumber}</p></div>
-                  <div><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Processed At</p><p className="text-sm text-gray-900 dark:text-white">{new Date(response.order.processedAt).toLocaleString()}</p></div>
+                  <div><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Order ID</p><p className="font-mono text-sm text-gray-900 dark:text-white">{response.orderId}</p></div>
+                  <div><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Sequence Number</p><p className="font-mono text-sm text-gray-900 dark:text-white">#{response.sequenceNumber}</p></div>
+                  <div><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Partner</p><p className="text-sm text-gray-900 dark:text-white">{response.partnerId}</p></div>
                 </div>
                 <div className="flex gap-3 mt-4">
-                  <Button variant="secondary" size="sm" onClick={() => navigate(`/orders/${response.order!.id}`)}>View Order Details</Button>
+                  <Button variant="secondary" size="sm" onClick={() => navigate('/orders')}>View All Orders</Button>
                   <Button variant="ghost" size="sm" onClick={() => { handleReset(); setResponse(null); }}>Submit Another</Button>
                 </div>
               </div>

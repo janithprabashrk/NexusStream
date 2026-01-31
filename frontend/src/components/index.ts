@@ -24,3 +24,6 @@ export { Badge } from './Badge';
 export type { BadgeProps } from './Badge';
 
 export { Layout } from './Layout';
+
+// Illustrations
+export { DashboardIllustration, EmptyStateIllustration, SuccessIllustration } from './Illustrations';

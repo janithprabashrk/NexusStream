@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Loading } from '@/components';
+import { Card, Loading, DashboardIllustration } from '@/components';
 import { ordersApi } from '@/api';
 import { OrderStatistics } from '@/types';
 import { formatCurrency } from '@/utils/formatters';
@@ -123,15 +123,18 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="mt-1 text-gray-500 dark:text-gray-400">Overview of your order processing metrics</p>
-        </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyber-500/10 dark:bg-neon-cyan/10 border border-cyber-500/20 dark:border-neon-cyan/20">
-          <div className="w-2 h-2 rounded-full bg-cyber-500 dark:bg-neon-cyan animate-pulse" />
-          <span className="text-sm font-medium text-cyber-600 dark:text-neon-cyan">Real-time sync active</span>
+      {/* Page Header with Illustration */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyber-500/10 via-transparent to-neon-purple/10 dark:from-cyber-500/5 dark:to-neon-purple/5 p-6 border border-cyber-500/20 dark:border-white/5">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p className="mt-1 text-gray-600 dark:text-gray-400">Overview of your order processing metrics</p>
+            <div className="flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-white/60 dark:bg-neon-cyan/10 border border-cyber-500/20 dark:border-neon-cyan/20 w-fit">
+              <div className="w-2 h-2 rounded-full bg-cyber-500 dark:bg-neon-cyan animate-pulse" />
+              <span className="text-sm font-medium text-cyber-600 dark:text-neon-cyan">Real-time sync active</span>
+            </div>
+          </div>
+          <DashboardIllustration className="w-80 h-40 opacity-80 dark:opacity-60 hidden lg:block" />
         </div>
       </div>
 
