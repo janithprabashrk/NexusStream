@@ -180,7 +180,7 @@ export const Dashboard: React.FC = () => {
               </div>
               <div className="mt-4">
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.label}</p>
-                <p className={`mt-1 text-2xl font-bold ${stat.highlight ? 'gradient-text' : 'text-gray-900 dark:text-white'}`}>
+                <p className={`mt-1 text-2xl font-bold ${stat.highlight ? 'gradient-text' : 'stat-value'}`}>
                   {stat.value}
                 </p>
               </div>
@@ -193,7 +193,7 @@ export const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Partner Distribution */}
         <div className="lg:col-span-2 card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Orders by Partner</h3>
+          <h3 className="text-lg font-semibold stat-value mb-6">Orders by Partner</h3>
           
           <div className="space-y-6">
             {/* Partner A */}
@@ -201,11 +201,11 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-cyber-500 dark:bg-neon-cyan" />
-                  <span className="font-medium text-gray-900 dark:text-white">Partner A</span>
+                  <span className="font-medium stat-value">Partner A</span>
                 </div>
                 <div className="text-right">
-                  <span className="font-semibold text-gray-900 dark:text-white">{partnerAOrders.toLocaleString()}</span>
-                  <span className="text-gray-400 dark:text-gray-500 ml-1">orders</span>
+                  <span className="font-semibold stat-value">{partnerAOrders.toLocaleString()}</span>
+                  <span className="text-gray-500 dark:text-gray-400 ml-1">orders</span>
                 </div>
               </div>
               <div className="relative h-3 rounded-full bg-gray-100 dark:bg-dark-700 overflow-hidden">
@@ -224,11 +224,11 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-neon-purple" />
-                  <span className="font-medium text-gray-900 dark:text-white">Partner B</span>
+                  <span className="font-medium stat-value">Partner B</span>
                 </div>
                 <div className="text-right">
-                  <span className="font-semibold text-gray-900 dark:text-white">{partnerBOrders.toLocaleString()}</span>
-                  <span className="text-gray-400 dark:text-gray-500 ml-1">orders</span>
+                  <span className="font-semibold stat-value">{partnerBOrders.toLocaleString()}</span>
+                  <span className="text-gray-500 dark:text-gray-400 ml-1">orders</span>
                 </div>
               </div>
               <div className="relative h-3 rounded-full bg-gray-100 dark:bg-dark-700 overflow-hidden">
@@ -258,13 +258,13 @@ export const Dashboard: React.FC = () => {
               </defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              <span className="text-2xl font-bold stat-value">
                 {formatCurrency(stats.averageOrderValue || 0)}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">avg / order</span>
             </div>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Average Order Value</h3>
+          <h3 className="mt-4 text-lg font-semibold stat-value">Average Order Value</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Based on {totalOrders.toLocaleString()} orders</p>
         </div>
       </div>
@@ -272,7 +272,7 @@ export const Dashboard: React.FC = () => {
       {/* Orders by Date */}
       {stats.ordersByDate && Object.keys(stats.ordersByDate).length > 0 && (
         <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h3>
+          <h3 className="text-lg font-semibold stat-value mb-6">Recent Activity</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
             {Object.entries(stats.ordersByDate)
               .sort(([a], [b]) => b.localeCompare(a))
@@ -282,7 +282,7 @@ export const Dashboard: React.FC = () => {
                   key={date}
                   className="p-4 rounded-xl bg-gray-50 dark:bg-dark-700 text-center group hover:bg-cyber-500/10 dark:hover:bg-neon-cyan/10 transition-colors"
                 >
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-cyber-600 dark:group-hover:text-neon-cyan transition-colors">
+                  <p className="text-2xl font-bold stat-value group-hover:text-cyber-600 dark:group-hover:text-neon-cyan transition-colors">
                     {count}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
