@@ -322,7 +322,7 @@ html.dark .input-field:focus {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 html.dark .card {
@@ -338,7 +338,7 @@ html.dark .card {
 }
 
 .table-modern thead {
-  background: rgba(249, 250, 251, 0.5);
+  background: #f9fafb;
 }
 
 html.dark .table-modern thead {
@@ -351,7 +351,7 @@ html.dark .table-modern thead {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
+  color: #374151;
 }
 
 html.dark .table-modern th {
@@ -361,8 +361,8 @@ html.dark .table-modern th {
 .table-modern td {
   padding: 1rem 1.5rem;
   font-size: 0.875rem;
-  color: #374151;
-  border-top: 1px solid #f3f4f6;
+  color: #1f2937;
+  border-top: 1px solid #e5e7eb;
 }
 
 html.dark .table-modern td {
@@ -375,7 +375,7 @@ html.dark .table-modern td {
 }
 
 .table-modern tbody tr:hover {
-  background: rgba(249, 250, 251, 0.5);
+  background: #f3f4f6;
 }
 
 html.dark .table-modern tbody tr:hover {
@@ -397,8 +397,8 @@ html.dark .table-modern tbody tr.clickable:hover {
 /* Cyber grid background */
 .cyber-grid {
   background-image: 
-    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(11, 165, 236, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 165, 236, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 

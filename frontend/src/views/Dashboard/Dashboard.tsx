@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Loading, DashboardIllustration } from '@/components';
 import { ordersApi } from '@/api';
 import { OrderStatistics } from '@/types';
@@ -42,22 +42,35 @@ export const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await ordersApi.getStatistics();
-        setStats(result);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch statistics');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
+  const fetchStats = useCallback(async (showLoading = true) => {
+    if (showLoading) setLoading(true);
+    setError(null);
+    try {
+      const result = await ordersApi.getStatistics();
+      setStats(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch statistics');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // Initial fetch and auto-refresh on window focus
+  useEffect(() => {
+    fetchStats();
+
+    // Refresh data when user returns to the tab/page
+    const handleFocus = () => fetchStats(false);
+    window.addEventListener('focus', handleFocus);
+
+    // Also refresh periodically (every 30 seconds)
+    const interval = setInterval(() => fetchStats(false), 30000);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(interval);
+    };
+  }, [fetchStats]);
 
   if (loading) {
     return <Loading size="lg" text="Loading statistics..." fullPage />;

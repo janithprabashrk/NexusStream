@@ -50,11 +50,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-300">
       {/* Cyber grid background */}
-      <div className="fixed inset-0 cyber-grid opacity-50 pointer-events-none" />
+      <div className="fixed inset-0 cyber-grid opacity-30 dark:opacity-50 pointer-events-none" />
       
-      {/* Gradient orbs */}
-      <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyber-500/10 dark:bg-neon-cyan/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-neon-purple/10 dark:bg-neon-purple/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Gradient orbs - more subtle in light mode */}
+      <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyber-500/5 dark:bg-neon-cyan/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-neon-purple/5 dark:bg-neon-purple/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header */}
       <header className="sticky top-0 z-50 glass-strong border-b border-gray-200/50 dark:border-white/5">
