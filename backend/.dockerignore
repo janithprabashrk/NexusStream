@@ -1,0 +1,47 @@
+# NexusStream Docker Ignore
+# Prevents unnecessary files from being copied to Docker context
+
+# Dependencies
+node_modules
+npm-debug.log
+
+# Build outputs
+dist
+build
+coverage
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Environment files (use docker-compose environment instead)
+.env
+.env.local
+.env.*.local
+
+# Test files
+*.test.ts
+*.spec.ts
+__tests__
+tests
+
+# Documentation
+*.md
+docs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Data files (will be mounted as volume)
+data/*.json

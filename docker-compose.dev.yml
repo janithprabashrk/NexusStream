@@ -1,0 +1,41 @@
+# NexusStream - Development Docker Compose Override
+# 
+# This file provides development-specific overrides.
+# It mounts source code for hot-reloading.
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Backend Service - Development Mode with Hot Reload
+  # ==========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend/src:/app/src:ro
+      - ./backend/data:/app/data
+    environment:
+      - NODE_ENV=development
+      - ENABLE_API_AUTH=false
+    command: npm run dev
+
+  # ==========================================================================
+  # Frontend Service - Vite Dev Server
+  # ==========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --host 0.0.0.0

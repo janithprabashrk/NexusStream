@@ -1,0 +1,86 @@
+# NexusStream - Docker Compose Configuration
+# SPEC REFERENCE: Optional - "Dockerfile/docker-compose setup for local running"
+#
+# Usage:
+#   Development:  docker-compose up
+#   Production:   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+#   Build:        docker-compose build
+#   Rebuild:      docker-compose up --build
+#   Stop:         docker-compose down
+#   Logs:         docker-compose logs -f [service_name]
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Backend Service - Node.js/Express API
+  # ==========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nexusstream-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # API Authentication (optional - set to 'true' to enable)
+      - ENABLE_API_AUTH=false
+      # Partner API Keys (only used if ENABLE_API_AUTH=true)
+      - PARTNER_A_API_KEY=pk_partner_a_prod_key_123
+      - PARTNER_B_API_KEY=pk_partner_b_prod_key_456
+      - MASTER_API_KEY=pk_master_admin_key_999
+      # CORS Configuration
+      - CORS_ORIGIN=http://localhost
+    volumes:
+      # Persist order data across container restarts
+      - nexusstream-data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - nexusstream-network
+
+  # ==========================================================================
+  # Frontend Service - React/Nginx
+  # ==========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nexusstream-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - nexusstream-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  nexusstream-network:
+    driver: bridge
+    name: nexusstream-network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  nexusstream-data:
+    name: nexusstream-data
+    driver: local
