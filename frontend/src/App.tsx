@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from '@/components';
-import { Dashboard, OrderList, OrderDetails, SubmitOrder } from '@/views';
+import { Dashboard, OrderList, OrderDetails, SubmitOrder, ErrorsView } from '@/views';
 import { ThemeProvider } from '@/context';
 
 function App() {
@@ -13,6 +13,7 @@ function App() {
             <Route path="/orders" element={<OrderList />} />
             <Route path="/orders/:id" element={<OrderDetails />} />
             <Route path="/submit" element={<SubmitOrder />} />
+            <Route path="/errors" element={<ErrorsView />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Layout>

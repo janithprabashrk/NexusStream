@@ -98,6 +98,27 @@ export interface BatchFeedResponse {
   results: FeedResponse[];
 }
 
+// Error Event for Errors View
+export interface ErrorEvent {
+  id: string;
+  partnerId: string;
+  externalOrderId?: string;
+  errorCode: string;
+  message: string;
+  details: Array<{ field: string; message: string }>;
+  errors?: string[];
+  originalPayload: unknown;
+  timestamp: string;
+}
+
+// Error Statistics
+export interface ErrorStatistics {
+  totalErrors: number;
+  errorsByPartner: Record<string, number>;
+  errorsByCode: Record<string, number>;
+  last24Hours: number;
+}
+
 // Query Parameters
 export interface OrderQueryFilters {
   partnerId?: PartnerId;
