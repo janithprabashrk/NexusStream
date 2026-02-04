@@ -95,7 +95,8 @@ export const ordersApi = {
   },
 
   async getStatistics(): Promise<OrderStatistics> {
-    return request<OrderStatistics>('/orders/stats');
+    const response = await request<{ status: string; statistics: OrderStatistics }>('/orders/stats');
+    return response.statistics;
   },
 };
 
