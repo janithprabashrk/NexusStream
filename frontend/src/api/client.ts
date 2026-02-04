@@ -150,4 +150,31 @@ export const feedApi = {
   },
 };
 
+// Errors API (Optional feature - Errors View)
+export const errorsApi = {
+  async getErrors(params: Record<string, unknown> = {}): Promise<PaginatedResult<any>> {
+    const queryString = buildQueryString(params);
+    const response = await request<{ status: string } & PaginatedResult<any>>(`/errors${queryString}`);
+    return {
+      data: response.data,
+      total: response.total,
+      page: response.page,
+      pageSize: response.pageSize,
+      totalPages: response.totalPages,
+      hasNextPage: response.page < response.totalPages,
+      hasPreviousPage: response.page > 1,
+    };
+  },
+
+  async getErrorById(id: string): Promise<any> {
+    const response = await request<{ status: string; error: any }>(`/errors/${encodeURIComponent(id)}`);
+    return response.error;
+  },
+
+  async getStatistics(): Promise<any> {
+    const response = await request<{ status: string; statistics: any }>('/errors/stats');
+    return response.statistics;
+  },
+};
+
 export { ApiError };

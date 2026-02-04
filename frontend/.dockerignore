@@ -1,0 +1,39 @@
+# NexusStream Frontend Docker Ignore
+
+# Dependencies
+node_modules
+npm-debug.log
+
+# Build outputs
+dist
+build
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test files
+*.test.tsx
+*.spec.tsx
+__tests__
+
+# Documentation
+*.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
