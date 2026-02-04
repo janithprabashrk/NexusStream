@@ -21,13 +21,13 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           {label}
         </label>
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 dark:text-gray-400 z-10">
             {icon}
           </div>
         )}
@@ -35,7 +35,7 @@ export const Input: React.FC<InputProps> = ({
           id={inputId}
           className={`
             input-field
-            ${icon ? 'pl-10' : ''}
+            ${icon ? 'has-icon' : ''}
             ${error ? 'border-red-500 dark:border-red-400 focus:ring-red-500/50' : ''}
           `}
           {...props}
