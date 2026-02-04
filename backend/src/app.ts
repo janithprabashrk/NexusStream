@@ -1,11 +1,14 @@
 import express, { Express } from 'express';
-import { createFeedRouter, createOrdersRouter, errorHandler, notFoundHandler } from './infrastructure/http';
+import cors from 'cors';
+import { v4 as uuidv4 } from 'uuid';
+import { createFeedRouter, createOrdersRouter, createErrorsRouter, errorHandler, notFoundHandler, createApiKeyAuth } from './infrastructure/http';
 import { FeedHandler } from './application/services/feed-handler';
 import { OrderQueryService } from './application/services/order-query-service';
 import { ValidationService } from './domain/services/validation-service';
 import { OrderTransformer } from './domain/services/order-transformer';
-import { InMemoryOrderStream, InMemorySequenceManager, InMemoryOrderRepository, FileOrderRepository, FileSequenceManager } from './infrastructure/adapters';
-import { IOrderRepositoryPort, ISequenceManagerPort } from './domain/ports';
+import { InMemoryOrderStream, InMemorySequenceManager, InMemoryOrderRepository, FileOrderRepository, FileSequenceManager, FileErrorRepository, InMemoryErrorRepository } from './infrastructure/adapters';
+import { IOrderRepositoryPort, ISequenceManagerPort, IErrorRepositoryPort } from './domain/ports';
+import { ErrorCode } from './domain/models';
 
 /**
  * Application container for dependency injection.
@@ -14,6 +17,7 @@ export interface AppContainer {
   orderStream: InMemoryOrderStream;
   sequenceManager: ISequenceManagerPort;
   orderRepository: IOrderRepositoryPort;
+  errorRepository: IErrorRepositoryPort;
   validationService: ValidationService;
   transformer: OrderTransformer;
   feedHandler: FeedHandler;
@@ -31,6 +35,16 @@ export interface ContainerOptions {
 }
 
 /**
+ * Application options for configuring the Express app.
+ */
+export interface AppOptions {
+  /** Enable API key authentication (default: false in dev, true in production) */
+  enableApiAuth?: boolean;
+  /** CORS origin (default: '*' in dev) */
+  corsOrigin?: string | string[];
+}
+
+/**
  * Create and configure the application container.
  */
 export function createContainer(options: ContainerOptions = {}): AppContainer {
@@ -42,15 +56,18 @@ export function createContainer(options: ContainerOptions = {}): AppContainer {
   
   let sequenceManager: ISequenceManagerPort;
   let orderRepository: IOrderRepositoryPort;
+  let errorRepository: IErrorRepositoryPort;
 
   if (usePersistence) {
     console.log('💾 Using file-based persistence');
     sequenceManager = new FileSequenceManager(dataDir);
     orderRepository = new FileOrderRepository(dataDir);
+    errorRepository = new FileErrorRepository(dataDir);
   } else {
     console.log('🧠 Using in-memory storage (no persistence)');
     sequenceManager = new InMemorySequenceManager();
     orderRepository = new InMemoryOrderRepository();
+    errorRepository = new InMemoryErrorRepository();
   }
 
   // Domain services
@@ -72,10 +89,25 @@ export function createContainer(options: ContainerOptions = {}): AppContainer {
     await orderRepository.save(payload.orderEvent);
   });
 
+  // Subscribe to error orders stream to persist errors
+  orderStream.onErrorOrder(async (payload) => {
+    await errorRepository.save({
+      id: uuidv4(),
+      partnerId: payload.partnerId,
+      externalOrderId: payload.originalOrderId,
+      errorCode: ErrorCode.INVALID_VALUE,
+      message: 'Validation failed',
+      details: payload.errors.map((e) => ({ field: 'validation', message: e })),
+      originalPayload: payload.rawInput,
+      timestamp: payload.timestamp.toISOString(),
+    });
+  });
+
   return {
     orderStream,
     sequenceManager,
     orderRepository,
+    errorRepository,
     validationService,
     transformer,
     feedHandler,
@@ -86,12 +118,30 @@ export function createContainer(options: ContainerOptions = {}): AppContainer {
 /**
  * Create and configure the Express application.
  */
-export function createApp(container?: AppContainer): Express {
+export function createApp(container?: AppContainer, options: AppOptions = {}): Express {
   const app = express();
   const appContainer = container ?? createContainer();
 
-  // Middleware
+  const {
+    enableApiAuth = process.env.ENABLE_API_AUTH === 'true',
+    corsOrigin = process.env.CORS_ORIGIN || '*',
+  } = options;
+
+  // CORS middleware - allow frontend to make requests
+  app.use(cors({
+    origin: corsOrigin,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  }));
+
+  // Body parsing middleware
   app.use(express.json({ limit: '10mb' }));
+
+  // Optional API key authentication for feed endpoints
+  if (enableApiAuth) {
+    console.log('🔐 API key authentication enabled');
+    app.use('/api/feed', createApiKeyAuth({ enabled: true }));
+  }
 
   // Health check
   app.get('/health', (_req, res) => {
@@ -101,6 +151,7 @@ export function createApp(container?: AppContainer): Express {
   // API routes
   app.use('/api/feed', createFeedRouter(appContainer.feedHandler));
   app.use('/api/orders', createOrdersRouter(appContainer.orderQueryService));
+  app.use('/api/errors', createErrorsRouter(appContainer.errorRepository));
 
   // Error handling
   app.use(notFoundHandler);

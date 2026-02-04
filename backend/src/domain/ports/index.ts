@@ -18,3 +18,11 @@ export {
   PaginatedResult,
   OrderStatistics
 } from './order-repository.port';
+
+export {
+  IErrorRepositoryPort,
+  ErrorQueryFilters,
+  ErrorPaginationOptions,
+  ErrorPaginatedResult,
+  ErrorStatistics
+} from './error-repository.port';
