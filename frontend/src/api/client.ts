@@ -71,11 +71,13 @@ export const ordersApi = {
   },
 
   async getOrderById(id: string): Promise<OrderEvent> {
-    return request<OrderEvent>(`/orders/${encodeURIComponent(id)}`);
+    const response = await request<{ status: string; order: OrderEvent }>(`/orders/${encodeURIComponent(id)}`);
+    return response.order;
   },
 
   async getOrderByExternalId(externalId: string): Promise<OrderEvent> {
-    return request<OrderEvent>(`/orders/external/${encodeURIComponent(externalId)}`);
+    const response = await request<{ status: string; order: OrderEvent }>(`/orders/external/${encodeURIComponent(externalId)}`);
+    return response.order;
   },
 
   async getOrdersByPartner(
