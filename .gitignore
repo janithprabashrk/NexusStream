@@ -21,3 +21,6 @@ build/
 # Data persistence files
 data/
 backend/data/
+
+# Test coverage
+backend/coverage
